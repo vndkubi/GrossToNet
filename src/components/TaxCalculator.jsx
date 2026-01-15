@@ -722,11 +722,11 @@ const TaxCalculator = () => {
                         </div>
                     </div>
 
-                    {/* Budget Planner - Showing stats for 2026 Increased as default */}
+                    {/* Budget Planner - Comparison View */}
                     <BudgetPlanner
-                        monthlyNet={results.data2026Increased.net}
-                        annualBonusNet={(results.data2026Increased.annual.month13Net || 0) + (results.data2026Increased.annual.bonusNet || 0)}
-                        salaryIncreasePercent={salaryIncreasePercent}
+                        data2025={results.data2025}
+                        data2026Same={results.data2026Same}
+                        data2026Increased={results.data2026Increased}
                     />
                 </>
             )}
