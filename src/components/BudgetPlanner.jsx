@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const BudgetPlanner = ({ monthlyNet, annualBonusNet, salaryIncreasePercent }) => {
-    // Default expenses (now an array for dynamic adding/removing)
+    // Default expenses
     const [expenses, setExpenses] = useState([
         { id: 1, name: 'Nhà ở', value: 5000000 },
         { id: 2, name: 'Ăn uống', value: 4000000 },
@@ -9,16 +9,30 @@ const BudgetPlanner = ({ monthlyNet, annualBonusNet, salaryIncreasePercent }) =>
     ]);
 
     const [newItemName, setNewItemName] = useState('');
-    const [newItemValue, setNewItemValue] = useState('');
+    const [newItemValue, setNewItemValue] = useState(''); // Store as formatted string for display
     const [isExpanded, setIsExpanded] = useState(false);
 
+    // Helper: 123456 -> "123.456"
+    const formatNumber = (num) => {
+        if (!num) return '';
+        return new Intl.NumberFormat('vi-VN').format(num);
+    };
+
+    // Helper: "123.456" -> 123456
+    const parseNumber = (str) => {
+        if (!str) return 0;
+        // Remove dots and commas
+        return Number(str.replace(/\./g, '').replace(/,/g, ''));
+    };
+
     const handleAddExpense = () => {
-        if (!newItemName || !newItemValue) return;
+        const rawValue = parseNumber(newItemValue);
+        if (!newItemName || !rawValue) return;
 
         const newItem = {
-            id: Date.now(), // simple unique id
+            id: Date.now(),
             name: newItemName,
-            value: Number(newItemValue.replace(/\D/g, '')) // ensure clean number
+            value: rawValue
         };
 
         setExpenses([...expenses, newItem]);
@@ -30,9 +44,11 @@ const BudgetPlanner = ({ monthlyNet, annualBonusNet, salaryIncreasePercent }) =>
         setExpenses(expenses.filter(item => item.id !== id));
     };
 
-    const handleUpdateExpense = (id, newValue) => {
+    const handleUpdateExpense = (id, newDisplayValue) => {
+        // Allow user to type, update state with numeric value
+        const numericValue = parseNumber(newDisplayValue);
         setExpenses(expenses.map(item =>
-            item.id === id ? { ...item, value: Number(newValue) } : item
+            item.id === id ? { ...item, value: numericValue } : item
         ));
     };
 
@@ -89,10 +105,14 @@ const BudgetPlanner = ({ monthlyNet, annualBonusNet, salaryIncreasePercent }) =>
                                     style={{ flex: 2, fontSize: '0.9rem', padding: '0.5rem' }}
                                 />
                                 <input
-                                    type="text" // using text to handle format if needed, but simple number for now
+                                    type="text"
                                     placeholder="Số tiền..."
                                     value={newItemValue}
-                                    onChange={(e) => setNewItemValue(e.target.value)}
+                                    onChange={(e) => {
+                                        // User logic: user types digits, we format immediately
+                                        const raw = e.target.value.replace(/[^0-9]/g, '');
+                                        setNewItemValue(formatNumber(raw));
+                                    }}
                                     className="input"
                                     style={{ flex: 1, fontSize: '0.9rem', padding: '0.5rem' }}
                                 />
@@ -112,16 +132,20 @@ const BudgetPlanner = ({ monthlyNet, annualBonusNet, salaryIncreasePercent }) =>
                                         <span style={{ color: '#e2e8f0', fontSize: '0.9rem', flex: 1 }}>{item.name}</span>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <input
-                                                type="number"
-                                                value={item.value}
-                                                onChange={(e) => handleUpdateExpense(item.id, e.target.value)}
+                                                type="text"
+                                                value={formatNumber(item.value)}
+                                                onChange={(e) => {
+                                                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                                                    handleUpdateExpense(item.id, raw);
+                                                }}
                                                 style={{
                                                     background: 'transparent',
                                                     border: 'none',
                                                     color: '#fff',
                                                     textAlign: 'right',
-                                                    width: '80px',
-                                                    fontSize: '0.9rem'
+                                                    width: '90px',
+                                                    fontSize: '0.9rem',
+                                                    outline: 'none'
                                                 }}
                                             />
                                             <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>₫</span>
