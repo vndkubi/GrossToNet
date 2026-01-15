@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { calculateInsurance, calculateTax2025, calculateTax2026, formatCurrency, SALARY_CONFIG } from '../utils/tax';
+import SalaryCharts from './SalaryCharts';
+import BudgetPlanner from './BudgetPlanner';
 
 // Helper to format number with thousand separators for display
 const formatInputDisplay = (value) => {
@@ -620,6 +622,13 @@ const TaxCalculator = () => {
                         </div>
                     </div>
 
+                    {/* Charts Section */}
+                    <SalaryCharts
+                        data2025={results.data2025}
+                        data2026Same={results.data2026Same}
+                        data2026Increased={results.data2026Increased}
+                    />
+
                     {/* Annual Package Summary */}
                     <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '16px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
                         <h3 style={{ margin: '0 0 1rem 0', color: '#f59e0b', fontSize: '1.1rem' }}>🎁 Package năm (bao gồm Tháng 13 + Thưởng)</h3>
@@ -712,6 +721,13 @@ const TaxCalculator = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Budget Planner - Showing stats for 2026 Increased as default */}
+                    <BudgetPlanner
+                        monthlyNet={results.data2026Increased.net}
+                        annualBonusNet={(results.data2026Increased.annual.month13Net || 0) + (results.data2026Increased.annual.bonusNet || 0)}
+                        salaryIncreasePercent={salaryIncreasePercent}
+                    />
                 </>
             )}
         </div>
