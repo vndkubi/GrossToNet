@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { calculateInsurance, calculateTax2025, calculateTax2026, formatCurrency, SALARY_CONFIG } from '../utils/tax';
 import SalaryCharts from './SalaryCharts';
 import BudgetPlanner from './BudgetPlanner';
+import DebtManager from './DebtManager';
 
 // Helper to format number with thousand separators for display
 const formatInputDisplay = (value) => {
@@ -721,6 +722,9 @@ const TaxCalculator = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Debt Manager */}
+                    <DebtManager monthlyNet={results.data2026Increased.net} />
 
                     {/* Budget Planner - Comparison View */}
                     <BudgetPlanner
